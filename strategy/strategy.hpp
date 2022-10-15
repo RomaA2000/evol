@@ -45,6 +45,12 @@ class MarketStrategy {
 
   void reset();
 
+  Stats stats() const;
+
+  void reset_stats();
+
+ protected:
+
   void to_start();
 
   void to_short(PointType prev_close_price);
@@ -68,10 +74,6 @@ class MarketStrategy {
 
   PointType get_stop_loss(PointType price);
 
-  Stats stats() const;
-
-  void reset_stats();
-
  private:
   LongState long_state;
   ShortState short_state;
@@ -81,6 +83,11 @@ class MarketStrategy {
 
   MarketState *current_state;
   ParameterCalculator stop_loss_calculator;
+
+  friend class LongState;
+  friend class ShortState;
+  friend class StartState;
+  friend class MarketState;
 };
 
 #endif //EVOL_STRATEGY_HPP

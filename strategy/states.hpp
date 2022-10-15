@@ -19,11 +19,12 @@ class MarketState {
 
   MarketState *activate(const PointType &prev_close_price);
 
+  virtual void process(const CandleType &candle, Action action) = 0;
+
+ protected:
   void exit_by_stop_loss(const CandleType &candle, Action action);
 
   bool check_enter_on_next_candle() const;
-
-  virtual void process(const CandleType &candle, Action action) = 0;
 
   virtual ~MarketState() = default;
 
@@ -41,6 +42,7 @@ class ShortState : public MarketState {
 
   void process(const CandleType &candle, Action action) override;
 
+ protected:
   bool is_exit_by_stop_loss(const CandleType &candle) const;
 
  private:
@@ -54,6 +56,7 @@ class LongState : public MarketState {
 
   void process(const CandleType &candle, Action action) override;
 
+ protected:
   bool is_exit_by_stop_loss(const CandleType &candle) const;
 
  private:
