@@ -1059,7 +1059,6 @@ namespace std
         }
     };
 }
-
 # undef TR2_OPTIONAL_REQUIRES
 # undef TR2_OPTIONAL_ASSERTED_EXPRESSION
 
