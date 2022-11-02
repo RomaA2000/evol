@@ -5,7 +5,7 @@
 #ifndef EVOL_DEAL_TRACKER_HPP
 #define EVOL_DEAL_TRACKER_HPP
 
-#include "candle.hpp"
+#include "utils/candle.hpp"
 
 constexpr PointType MAKER_COMISSION = 0.000120;
 constexpr PointType TAKER_COMISSION = 0.000300;

@@ -86,8 +86,10 @@ PointType MarketStrategy::move_stop_loss_short(const CandleType &candle, PointTy
 PointType MarketStrategy::get_stop_loss(PointType price) {
   return stop_loss_calculator.calculate(price);
 }
+
 Stats MarketStrategy::stats() const {
   return {
+      .positive_count = deal_tracker.positive_count,
       .deal_count = deal_tracker.count,
       .sum = deal_tracker.sum
   };

@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <array>
 #include <iostream>
-#include <optional>
-#include "candle.hpp"
+#include "optional.hpp"
+#include "../deal_tracker/deal_tracker.hpp"
 
 class MarketStrategy;
 
@@ -30,7 +30,7 @@ class MarketState {
 
   PointType stop_loss_threshold = 0.0;
 
-  std::optional<PointType> close_price_before_enter = {};
+    std::experimental::optional<PointType> close_price_before_enter = {};
 
   MarketStrategy &_strategy;
 };

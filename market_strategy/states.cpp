@@ -2,6 +2,7 @@
 // Created by Роман Агеев on 15.10.2022.
 //
 
+#include <cassert>
 #include "states.hpp"
 #include "strategy.hpp"
 
