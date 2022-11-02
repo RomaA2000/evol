@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <array>
 #include <iostream>
-#include "optional.hpp"
+#include "../utils/optional.hpp"
 #include "../deal_tracker/deal_tracker.hpp"
 
 class MarketStrategy;
