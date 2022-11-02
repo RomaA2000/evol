@@ -4,9 +4,10 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
-
-#include "candle.hpp"
-#include "strategy/strategy.hpp"
+#include <chrono>
+#include <cassert>
+#include <future>
+#include "market_strategy/strategy.hpp"
 
 constexpr PointType DELTA = 3.8000000000000035E-4;
 constexpr PointType STOP_LOSS = 5.0E-4;
@@ -84,7 +85,7 @@ int main() {
 
         market_strategy.exit(candles_with_actions[i].first);
 
-        auto [count, sum] = market_strategy.stats();
+        auto [positive_count, count, sum] = market_strategy.stats();
 
         market_strategy.reset();
         market_strategy.reset_stats();
