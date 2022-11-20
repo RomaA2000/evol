@@ -10,9 +10,14 @@
 #include <iostream>
 
 enum class Action : int {
-  LONG = 1,
-  SHORT = -1,
-  NONE = 0
+    LONG = 1,
+    SHORT = -1,
+    NONE = 0
+};
+
+enum class ParameterCalculationStrategy {
+    RELATIVE,
+    ABSOLUTE
 };
 
 template<typename T, size_t Frame>
@@ -23,47 +28,47 @@ using Candle = MergedCandle<T, 1>;
 
 template<typename T, size_t Frame>
 struct MergedCandle : Candle<T> {
-  std::array<Candle<T>, Frame> inner_candles;
+    std::array<Candle<T>, Frame> inner_candles;
 
-  MergedCandle(
-      T open,
-      T high,
-      T low,
-      T close,
-      T volume,
-      std::array<Candle<T>, Frame> inner_candles
-  ) :
-      Candle<T>(open, high, low, close, volume),
-      inner_candles(inner_candles) {}
+    MergedCandle(
+            T open,
+            T high,
+            T low,
+            T close,
+            T volume,
+            std::array<Candle<T>, Frame> inner_candles
+    ) :
+            Candle<T>(open, high, low, close, volume),
+            inner_candles(inner_candles) {}
 
-  MergedCandle() = default;
+    MergedCandle() = default;
 };
 
 using Time = size_t;
 
 template<typename T>
 struct MergedCandle<T, 1> {
-  Time time_stamp = 0;
-  T open = 0;
-  T close = 0;
-  T high = 0;
-  T low = 0;
-  T volume = 0;
+    Time time_stamp = 0;
+    T open = 0;
+    T close = 0;
+    T high = 0;
+    T low = 0;
+    T volume = 0;
 
-  MergedCandle() = default;
+    MergedCandle() = default;
 
-  MergedCandle(
-      T open,
-      T close,
-      T high,
-      T low,
-      T volume
-  ) :
-      open(open),
-      close(close),
-      high(high),
-      low(low),
-      volume(volume) {}
+    MergedCandle(
+            T open,
+            T close,
+            T high,
+            T low,
+            T volume
+    ) :
+            open(open),
+            close(close),
+            high(high),
+            low(low),
+            volume(volume) {}
 };
 
 template<size_t Frame>
@@ -71,5 +76,24 @@ using FloatCandle = MergedCandle<float, Frame>;
 
 using PointType = double;
 using CandleType = FloatCandle<1>;
+
+class ParameterCalculator {
+public:
+
+    ParameterCalculator(PointType value, ParameterCalculationStrategy strategy);
+
+    PointType calculate(PointType price) const;
+
+private:
+    PointType _value;
+    ParameterCalculationStrategy _strategy;
+};
+
+
+struct Stats {
+    uint64_t positive_count;
+    uint64_t deal_count;
+    PointType sum;
+};
 
 #endif //EVOL_CANDLE_HPP

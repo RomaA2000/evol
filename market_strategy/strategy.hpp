@@ -2,90 +2,74 @@
 // Created by Роман Агеев on 15.10.2022.
 //
 
-#ifndef EVOL_STRATEGY_HPP
-#define EVOL_STRATEGY_HPP
+#ifndef EVOL_MARKET_STRATEGY_HPP
+#define EVOL_MARKET_STRATEGY_HPP
 
 #include <cstddef>
 #include <array>
 #include <iostream>
 #include "states.hpp"
 
-enum class ParameterCalculationStrategy {
-    RELATIVE,
-    ABSOLUTE
-};
+namespace Market {
 
-struct Stats {
-    uint64_t positive_count;
-    uint64_t deal_count;
-    PointType sum;
-};
+    class MarketStrategy {
+    public:
+        explicit MarketStrategy(ParameterCalculator parameter_calculator);
 
-class ParameterCalculator {
-public:
+        void process(const CandleType &candle, Action action);
 
-    ParameterCalculator(PointType value, ParameterCalculationStrategy strategy);
+        void exit(const CandleType &last_candle);
 
-    PointType calculate(PointType price) const;
+        void reset();
 
-private:
-    PointType _value;
-    ParameterCalculationStrategy _strategy;
-};
+        Stats stats() const;
 
-class MarketStrategy {
-public:
-    explicit MarketStrategy(ParameterCalculator parameter_calculator);
+        void reset_stats();
 
-    void process(const CandleType &candle, Action action);
+    protected:
 
-    void exit(const CandleType &last_candle);
+        void to_start();
 
-    void reset();
+        void to_short(PointType prev_close_price);
 
-    Stats stats() const;
+        void to_long(PointType prev_close_price);
 
-    void reset_stats();
+        /**
+         * Входит в сделку Long. Выходит из предыдущей, если такая была
+        */
+        void enter_long_by_market(Time time, PointType price);
 
-protected:
+        /**
+         * Входит в сделку Short. Выходит из предыдущей, если такая была
+        */
+        void enter_short_by_market(Time time, PointType price);
 
-    void to_start();
+        void escape_deal_by_stop_loss(Time time, PointType price);
 
-    void to_short(PointType prev_close_price);
+        PointType move_stop_loss_long(const CandleType &candle, PointType old_value) const;
 
-    void to_long(PointType prev_close_price);
+        PointType move_stop_loss_short(const CandleType &candle, PointType old_value) const;
 
-    /**
-     * Входит в сделку Long. Выходит из предыдущей, если такая была
-    */
-    void enter_long_by_market(Time time, PointType price);
-    /**
-     * Входит в сделку Short. Выходит из предыдущей, если такая была
-    */
-    void enter_short_by_market(Time time, PointType price);
+        PointType get_stop_loss(PointType price);
 
-    void escape_deal_by_stop_loss(Time time, PointType price);
+    private:
+        Market::LongState long_state;
+        Market::ShortState short_state;
+        Market::StartState start_state;
 
-    PointType move_stop_loss_long(const CandleType &candle, PointType old_value) const;
+        BinanceDealTracker deal_tracker;
 
-    PointType move_stop_loss_short(const CandleType &candle, PointType old_value) const;
+        Market::MarketState *current_state;
+        ParameterCalculator stop_loss_calculator;
 
-    PointType get_stop_loss(PointType price);
+        friend class LongState;
 
-private:
-    LongState long_state;
-    ShortState short_state;
-    StartState start_state;
+        friend class ShortState;
 
-    BinanceDealTracker deal_tracker;
+        friend class StartState;
 
-    MarketState *current_state;
-    ParameterCalculator stop_loss_calculator;
+        friend class MarketState;
+    };
+}
 
-    friend class LongState;
-    friend class ShortState;
-    friend class StartState;
-    friend class MarketState;
-};
-
-#endif //EVOL_STRATEGY_HPP
+#endif //EVOL_MARKET_STRATEGY_HPP

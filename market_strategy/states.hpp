@@ -2,73 +2,77 @@
 // Created by Роман Агеев on 15.10.2022.
 //
 
-#ifndef EVOL_STATES_HPP
-#define EVOL_STATES_HPP
+#ifndef EVOL_MARKET_STATES_HPP
+#define EVOL_MARKET_STATES_HPP
 
 #include <cstddef>
 #include <array>
 #include <iostream>
 #include "../utils/optional.hpp"
+#include "../utils/candle.hpp"
 #include "../deal_tracker/deal_tracker.hpp"
 
-class MarketStrategy;
+namespace Market {
 
-class MarketState {
- public:
-  explicit MarketState(MarketStrategy &strategy);
+    class MarketStrategy;
 
-  MarketState *activate(const PointType &prev_close_price);
+    class MarketState {
+    public:
+        explicit MarketState(MarketStrategy &strategy);
 
-  virtual void process(const CandleType &candle, Action action) = 0;
+        MarketState *activate(const PointType &prev_close_price);
 
- protected:
-  void exit_by_stop_loss(const CandleType &candle, Action action);
+        virtual void process(const CandleType &candle, Action action) = 0;
 
-  bool check_enter_on_next_candle() const;
+    protected:
+        void exit_by_stop_loss(const CandleType &candle, Action action);
 
-  virtual ~MarketState() = default;
+        bool check_enter_on_next_candle() const;
 
-  PointType stop_loss_threshold = 0.0;
+        virtual ~MarketState() = default;
 
-    std::experimental::optional<PointType> close_price_before_enter = {};
+        PointType stop_loss_threshold = 0.0;
 
-  MarketStrategy &_strategy;
-};
+        std::experimental::optional<PointType> close_price_before_enter = {};
 
-class ShortState : public MarketState {
- public:
+        MarketStrategy &_strategy;
+    };
 
-  explicit ShortState(MarketStrategy &strategy);
+    class ShortState : public MarketState {
+    public:
 
-  void process(const CandleType &candle, Action action) override;
+        explicit ShortState(MarketStrategy &strategy);
 
- protected:
-  bool is_exit_by_stop_loss(const CandleType &candle) const;
+        void process(const CandleType &candle, Action action) override;
 
- private:
-  void check_enter(const CandleType &candle);
-};
+    protected:
+        bool is_exit_by_stop_loss(const CandleType &candle) const;
 
-class LongState : public MarketState {
- public:
+    private:
+        void check_enter(const CandleType &candle);
+    };
 
-  explicit LongState(MarketStrategy &strategy);
+    class LongState : public MarketState {
+    public:
 
-  void process(const CandleType &candle, Action action) override;
+        explicit LongState(MarketStrategy &strategy);
 
- protected:
-  bool is_exit_by_stop_loss(const CandleType &candle) const;
+        void process(const CandleType &candle, Action action) override;
 
- private:
-  void check_enter(const CandleType &candle);
-};
+    protected:
+        bool is_exit_by_stop_loss(const CandleType &candle) const;
 
-class StartState : public MarketState {
- public:
+    private:
+        void check_enter(const CandleType &candle);
+    };
 
-  void process(const CandleType &candle, Action action) override;
+    class StartState : public MarketState {
+    public:
 
-  explicit StartState(MarketStrategy &strategy);
-};
+        void process(const CandleType &candle, Action action) override;
 
-#endif //EVOL_STATES_HPP
+        explicit StartState(MarketStrategy &strategy);
+    };
+}
+
+#endif //EVOL_MARKET_STATES_HPP
