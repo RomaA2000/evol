@@ -268,3 +268,96 @@ void ShortWaitLongState::process_stop_loss_cases(const CandleType &candle, Actio
 bool ShortWaitLongState::is_stop_loss_on_enter(const CandleType &candle, PointType threshold) const {
     return _strategy.is_exit_by_stop_loss_long(candle, threshold) && _strategy.is_exit_by_stop_loss_on_enter_long(candle, bias, threshold);
 }
+
+StartState::StartState(LimitStrategy &strategy) : LimitState(strategy) {}
+
+void StartState::process(const CandleType &candle, Action action) {
+    switch (action) {
+        case Action::NONE:
+            break;
+        case Action::SHORT:
+            _strategy.to_wait_short(candle.close + _strategy.gap(candle.close));
+            break;
+        case Action::LONG:
+            _strategy.to_wait_long(candle.close - _strategy.gap(candle.close));
+            break;
+    }
+}
+
+WaitLongState::WaitLongState(LimitStrategy &strategy) : LimitState(strategy) {}
+
+void WaitLongState::process(const CandleType &candle, Action action) {
+    if (candle.low <= bias) {
+        _strategy.enter_long(candle.time_stamp, bias);
+
+        PointType threshold = _strategy.stop_loss_long(bias);
+
+        if (is_stop_loss_on_enter(candle, threshold)) {
+            _strategy.escape_deal_by_stop_loss(candle.time_stamp, threshold);
+
+            switch (action) {
+                case Action::NONE:
+                    _strategy.to_start();
+                    break;
+                case Action::SHORT:
+                    _strategy.to_wait_short(candle.close + _strategy.gap(candle.close));
+                    break;
+                case Action::LONG:
+                    _strategy.to_wait_long(candle.close - _strategy.gap(candle.close));
+                    break;
+            }
+            return;
+        }
+
+        PointType updated_threshold = _strategy.move_stop_loss_long(candle, threshold);
+
+        if (action == Action::LONG || action == Action::NONE) {
+            _strategy.to_long(updated_threshold);
+        } else {
+            _strategy.to_long_wait_short(candle.close + _strategy.gap(candle.close), updated_threshold);
+        }
+    }
+}
+
+bool WaitLongState::is_stop_loss_on_enter(const CandleType &candle, PointType threshold) const {
+    return _strategy.is_exit_by_stop_loss_long(candle, threshold) && _strategy.is_exit_by_stop_loss_on_enter_long(candle, bias, threshold);
+}
+
+WaitShortState::WaitShortState(LimitStrategy &strategy) : LimitState(strategy) {}
+
+void WaitShortState::process(const CandleType &candle, Action action) {
+    if (candle.high >= bias) {
+        _strategy.enter_short(candle.time_stamp, bias);
+
+        PointType threshold = _strategy.stop_loss_short(bias);
+
+        if (is_stop_loss_on_enter(candle, threshold)) {
+            _strategy.escape_deal_by_stop_loss(candle.time_stamp, threshold);
+
+            switch (action) {
+                case Action::NONE:
+                    _strategy.to_start();
+                    break;
+                case Action::SHORT:
+                    _strategy.to_wait_short(candle.close + _strategy.gap(candle.close));
+                    break;
+                case Action::LONG:
+                    _strategy.to_wait_long(candle.close - _strategy.gap(candle.close));
+                    break;
+            }
+            return;
+        }
+
+        PointType updated_threshold = _strategy.move_stop_loss_short(candle, threshold);
+
+        if (action == Action::SHORT || action == Action::NONE) {
+            _strategy.to_short(updated_threshold);
+        } else {
+            _strategy.to_short_wait_long(candle.close - _strategy.gap(candle.close), updated_threshold);
+        }
+    }
+}
+
+bool WaitShortState::is_stop_loss_on_enter(const CandleType &candle, PointType threshold) const {
+    return _strategy.is_exit_by_stop_loss_short(candle, threshold) && _strategy.is_exit_by_stop_loss_on_enter_short(candle, bias, threshold);
+}

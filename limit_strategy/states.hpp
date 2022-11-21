@@ -108,6 +108,9 @@ namespace Limit {
         void process(const CandleType &candle, Action action) override;
 
         PointType bias = 0.0;
+
+    private:
+        bool is_stop_loss_on_enter(const CandleType &candle, PointType threshold) const;
     };
 
     class WaitShortState : public LimitState {
@@ -117,6 +120,9 @@ namespace Limit {
         void process(const CandleType &candle, Action action) override;
 
         PointType bias = 0.0;
+
+    private:
+        bool is_stop_loss_on_enter(const CandleType &candle, PointType threshold) const;
     };
 }
 
