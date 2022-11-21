@@ -143,6 +143,22 @@ struct MergedCandle<T, 1> {
             high(high),
             low(low),
             volume(volume) {}
+
+    bool is_exit_on_enter_long(PointType enter_value, PointType stop_loss_value) const {
+        return true;
+    }
+
+    bool is_exit_on_enter_short(PointType enter_value, PointType stop_loss_value) const {
+        return true;
+    }
+
+    bool is_enter_long_before_stop_loss_short(PointType enter_value, PointType stop_loss_value) const {
+        return false;
+    }
+
+    bool is_enter_short_before_stop_loss_long(PointType enter_value, PointType stop_loss_value) const {
+        return false;
+    }
 };
 
 template<size_t Frame>
