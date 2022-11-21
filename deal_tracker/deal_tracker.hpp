@@ -74,6 +74,12 @@ class BinanceDealTracker : public StatisticsDealTracker {
   void enter_short_by_market(Time time, PointType price);
 
   void reset();
+
+  void escape_deal_by_limit(Time time, PointType price);
+
+  void enter_long_by_limit(Time time, PointType price);
+
+  void enter_short_by_limit(Time time, PointType price);
 };
 
 #endif //EVOL_DEAL_TRACKER_HPP

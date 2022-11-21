@@ -119,3 +119,14 @@ void BinanceDealTracker::reset() {
   StatisticsDealTracker::reset();
 }
 
+void BinanceDealTracker::escape_deal_by_limit(Time time, PointType price) {
+    StatisticsDealTracker::escape_deal(time, price, price * MAKER_COMISSION);
+}
+
+void BinanceDealTracker::enter_long_by_limit(Time time, PointType price) {
+    StatisticsDealTracker::enter_long(time, price, price * MAKER_COMISSION);
+}
+
+void BinanceDealTracker::enter_short_by_limit(Time time, PointType price) {
+    StatisticsDealTracker::enter_short(time, price, price * MAKER_COMISSION);
+}

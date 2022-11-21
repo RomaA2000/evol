@@ -70,9 +70,9 @@ namespace Limit {
 
         void escape_deal_by_stop_loss(Time time, PointType price);
 
-        PointType move_stop_loss_long(const CandleType &candle, PointType current_stop_loss) const;
+        PointType move_stop_loss_long(const CandleType &candle, PointType current_stop_loss);
 
-        PointType move_stop_loss_short(const CandleType &candle, PointType current_stop_loss) const;
+        PointType move_stop_loss_short(const CandleType &candle, PointType current_stop_loss);
 
         virtual bool should_move_gap_long(PointType old_value, PointType new_value) const;
 
